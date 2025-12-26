@@ -100,6 +100,7 @@ Following the clustering, functional annotations were performed using standard e
 
 The complete dataset generated in this study, including the classified CTCF binding sites and cluster IDs, is available on Zenodo: **[DOI: 10.5281/zenodo.18057910](https://doi.org/10.5281/zenodo.18057910)**.
 
-The Sei model code is available at: https://doi.org/10.1038/s41588-022-01102-2.
+The Sei model code is available at: https://github.com/FunctionLab/seiframework 
+paper is available at: https://doi.org/10.1038/s41588-022-01102-2.
 
 
