@@ -1,1 +1,12 @@
+We utilize the Sei model to generate high-dimensional sequence embeddings.
+Input: sumpeak.txt (Genomic sequences centered on CTCF motifs)
+Output: CTCF_118_600bp-hg38_predictions.h5
+Run the prediction script:
 
+Bash
+python 1_sequence_prediction.py \
+    sumpeak.txt \
+    /path/to/output_dir/CTCF_118_600bp \
+    --genome=hg38 \
+    --cuda
+Note: Ensure the Sei model weights are correctly downloaded and referenced in the script.
