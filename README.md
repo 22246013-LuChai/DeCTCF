@@ -29,7 +29,7 @@ This repository contains the source code for the DeCTCF workflow, covering featu
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/YourUsername/DeCTCF.git](https://github.com/YourUsername/DeCTCF.git)
+    git clone https://github.com/22246013-LuChai/DeCTCF.git
     cd DeCTCF
     ```
 
