@@ -23,7 +23,7 @@ This repository contains the source code for the DeCTCF workflow, covering featu
 
 * **OS:** Linux / macOS
 * **Python:** >= 3.8
-* **Hardware:** A GPU is recommended for the Sei model prediction step. Typically requires >16GB RAM for PCA and clustering on large datasets (~230k sites).
+* **Hardware:** A GPU is recommended for the Sei model prediction step.
 
 ## 📦 Installation
 
@@ -102,7 +102,4 @@ The complete dataset generated in this study, including the classified CTCF bind
 
 The Sei model code is available at: https://doi.org/10.1038/s41588-022-01102-2.
 
-## 📄 Citation
 
-If you use DeCTCF in your research, please cite:
-> [Your Name], et al. "DeCTCF: Decoding CTCF binding sequences by leveraging predicted epigenomic features." *Nature Communications* (Submitted), 2025.
