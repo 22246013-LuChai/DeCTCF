@@ -1,0 +1,25 @@
+Reduce the high-dimensional Sei embeddings to principal components for efficient processing.
+
+1. Dimensionality Reduction (PCA)
+Script: 2_pca.py
+Input: CTCF_118_600bp-hg38_predictions.h5
+Bash
+python pca1.py --input /path/to/CTCF_118_600bp-hg38_predictions.h5 --output pca_result.npy
+
+2. Graph Construction (KNN)
+Construct the K-Nearest Neighbor graph based on the PCA results.
+Script: 3_knn.py
+Bash
+python knearst2.py --input pca_result.npy --k 30
+
+3. Clustering (Louvain)
+Perform Louvain community detection to identify distinct CTCF functional clusters.
+Script: 4_louvain.py
+Bash
+python louvainteststep3.py --input knn_graph.npz --resolution 1.0
+
+4. Visualization (UMAP)
+Visualize the clustering results using Uniform Manifold Approximation and Projection (UMAP).
+Script: 5_umap.py
+Bash
+python umapstep4.py --input clustering_result.h5ad --output umap_plot.pdf
