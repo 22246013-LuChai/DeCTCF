@@ -1,106 +1,104 @@
 # DeCTCF
+
 Decoding CTCF binding sequences by leveraging predicted epigenomic features
 
-**DeCTCF** is a deep learning-based computational framework designed to systematically decode the functional diversity of CTCF binding sites (CBSs). By integrating sequence-based feature embeddings from the [Sei model](https://github.com/calico/sei) with graph-based clustering, DeCTCF classifies CBSs into distinct functional clusters, revealing their roles in chromatin architecture, lineage-specific regulation, and TF cooperation.
+**DeCTCF** is an integrative computational framework for characterizing the functional diversity of CTCF binding sites (CBSs). It uses epigenomic features predicted by the pretrained [Sei model](https://github.com/FunctionLab/seiframework), together with dimensionality reduction, graph-based clustering, and downstream functional annotation, to organize CBSs into distinct clusters and investigate their associations with chromatin architecture, cell-line enrichment, epigenomic context, and candidate transcription factor co-factors.
 
-This repository contains the source code for the DeCTCF workflow, covering feature extraction, dimensionality reduction, graph-based clustering, and visualization.
+DeCTCF is not a newly developed deep learning model. The pretrained Sei model is used as a fixed feature extractor to generate sequence-predicted epigenomic features, which are subsequently analyzed using PCA, KNN graph construction, Louvain community detection, and downstream annotation.
+
+This repository contains the source code for feature extraction, dimensionality reduction, graph construction, clustering, and visualization in the DeCTCF workflow.
 
 ## 📋 Table of Contents
+
 - [System Requirements](#system-requirements)
 - [Installation](#installation)
-- [Workflow Overview](#workflow-overview)
 - [Step-by-Step Usage](#step-by-step-usage)
-  - [1. Feature Extraction (Sei)](#1-feature-extraction-sei)
-  - [2. Dimensionality Reduction (PCA)](#2-dimensionality-reduction-pca)
-  - [3. Graph Construction (KNN)](#3-graph-construction-knn)
-  - [4. Clustering (Louvain)](#4-clustering-louvain)
-  - [5. Visualization (UMAP)](#5-visualization-umap)
-- [Downstream Annotation](#downstream-annotation)
+  - [1. Feature Extraction Using Sei](#1-feature-extraction-using-sei)
+  - [2. Dimensionality Reduction](#2-dimensionality-reduction)
+  - [3. KNN Graph Construction](#3-knn-graph-construction)
+  - [4. Louvain Clustering](#4-louvain-clustering)
+  - [5. UMAP Visualization](#5-umap-visualization)
+- [Downstream Annotation Tools](#downstream-annotation-tools)
 - [Data Availability](#data-availability)
-- [Citation](#citation)
 
 ## ⚙️ System Requirements
 
-* **OS:** Linux / macOS
-* **Python:** >= 3.8
-* **Hardware:** A GPU is recommended for the Sei model prediction step.
+- **Operating system:** Linux or macOS
+- **Python:** version 3.8 or later
+- **Hardware:** A GPU is recommended for the Sei prediction step.
 
 ## 📦 Installation
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/22246013-LuChai/DeCTCF.git
-    cd DeCTCF
-    ```
+1. Clone this repository:
 
-2.  **Install Python dependencies:**
-    We recommend using a virtual environment (Conda or venv).
-    ```bash
-    pip install -r requirements.txt
-    ```
-    *Core dependencies include:* `numpy`, `h5py`, `scikit-learn`, `matplotlib`, `networkx`, `python-louvain` (for community detection), and `umap-learn`.
+   ```bash
+   git clone https://github.com/22246013-LuChai/DeCTCF.git
+   cd DeCTCF
 
-3.  **Install Sei Framework:**
-    The feature extraction step relies on the Sei model. Please verify the installation and download model weights following the official instructions: [https://github.com/calico/sei](https://github.com/calico/sei).
-
-## 🚀 Step-by-Step Usage
-
-### 1. Feature Extraction (Sei)
-First, we use the Sei framework to generate high-dimensional sequence embeddings (21,907 features) for the input sequences.
-
-* **Input:** `CTCF-118-600bp-hg38.txt` (600bp genomic sequences centered on CTCF motifs)
-* **Command:**
-    ```bash
-    python scripts/1_sei_prediction.py \
-        <input_sequence_file> \
-        <output_directory> \
-        --genome=hg38 \
-        --cuda
-    ```
-* **Output:** `CTCF_118_600bp-hg38_predictions.h5`
-
-### 2. Dimensionality Reduction (PCA)
-We perform Incremental PCA to reduce the high-dimensional features to the top principal components.
-
-* **Script:** `scripts/2_pca.py`
-* **Function:** Loads the H5 file, performs batch-wise PCA, and selects components explaining 95% variance.
-* **Output:** `pcanew_result.txt` (PCA embeddings), Explained variance plots.
-
-### 3. Graph Construction (KNN)
-Construct a K-Nearest Neighbor (KNN) graph based on the PCA embeddings.
-
-* **Script:** `scripts/3_knn.py`
-* **Parameters:** `k=14` (adjustable in script).
-* **Output:** `nearest_neighbors_indices14.txt`, `nearest_neighbors_distances14.txt`.
-
-### 4. Clustering (Louvain)
-Apply the Louvain community detection algorithm to partition the KNN graph into functional clusters.
-
-* **Script:** `scripts/4_louvain.py`
-* **Parameters:** `resolution=1.0`. Clusters smaller than 2.6% of the dataset are filtered out or merged.
-* **Output:** `largest_clusters14.txt` (Cluster assignments).
-
-### 5. Visualization (UMAP)
-Visualize the clustering results using UMAP (Uniform Manifold Approximation and Projection).
-
-* **Script:** `scripts/5_umap.py`
-* **Input:** PCA embeddings and Cluster assignments.
-* **Output:** `umap_louvain_clusters.png` (2D visualization).
-
-## 🧬 Downstream Annotation tools
-
-Following the clustering, functional annotations were performed using standard external tools. The specific parameters and versions used in this study are listed below:
-
-* **Motif Enrichment:** [monaLisa](https://bioconductor.org/packages/release/bioc/html/monaLisa.html) (v1.10.1) using JASPAR 2020 vertebrate database.
-* **Genomic Annotation:** [ChIPseeker](https://bioconductor.org/packages/release/bioc/html/ChIPseeker.html) (v11.40.1) R package.
-* **GO Enrichment:** [GREAT](http://great.stanford.edu/public/html/) (v4.0.4) using the "Basal plus extension" model.
-* **Sequence Scanning:** [FIMO](https://meme-suite.org/meme/tools/fimo) (MEME Suite v5.5.0).
-
-## 📂 Data Availability
-
-The complete dataset generated in this study, including the classified CTCF binding sites and cluster IDs, is available on Zenodo: **[DOI: 10.5281/zenodo.18057910](https://doi.org/10.5281/zenodo.18057910)**.
-
-The Sei model code is available at: https://github.com/FunctionLab/seiframework 
-paper is available at: https://doi.org/10.1038/s41588-022-01102-2.
-
-
+2. Install the required Python packages:
+   pip install -r requirements.txt
+   We recommend using a dedicated Conda or virtual environment.
+   Core dependencies include numpy, h5py, scikit-learn, matplotlib, networkx, python-louvain, and umap-learn.
+3. Install the Sei framework and obtain the pretrained model weights by following the instructions in the official repository:
+   https://github.com/FunctionLab/seiframework
+🚀 Step-by-Step Usage
+1. Feature Extraction Using Sei
+The pretrained Sei model is used as a fixed feature extractor to generate a 21,907-dimensional vector of sequence-predicted epigenomic features for each input sequence.
+- Script: 1_sei_prediction.py
+- Input: CTCF-118-600bp-hg38.txt
+- Input sequences: 600-bp genomic sequences centered on the highest-scoring CTCF motif identified by FIMO
+- Example command:
+  python 1_sei_prediction.py \
+      <input_sequence_file> \
+      <output_directory> \
+      --genome=hg38 \
+      --cuda
+- Output: CTCF_118_600bp-hg38_predictions.h5
+2. Dimensionality Reduction
+Incremental PCA is applied to the 21,907-dimensional Sei-derived feature vectors. The first 19 principal components are retained because they reach the prespecified cumulative explained-variance threshold of 95%.
+- Script: 2_pca.py
+- Input: Sei prediction file in HDF5 format
+- Batch size used in the study: 10,000 CBSs
+- Retained components: 19
+- Explained-variance threshold: 95%
+- Output: pcanew_result.txt and the corresponding explained-variance results
+3. KNN Graph Construction
+A K-nearest neighbor graph is constructed using the standardized PCA representation.
+- Script: 3_knn.py
+- Distance metric: Euclidean distance
+- Number of neighbors: k = 14
+- Outputs:
+  - nearest_neighbors_indices14.txt
+  - nearest_neighbors_distances14.txt
+4. Louvain Clustering
+Louvain community detection is applied to the KNN graph to identify CBS clusters.
+- Script: 4_louvain.py
+- Resolution: 1.0
+- Random seed: 42
+- Number of clusters obtained in the study: 20
+- Output: largest_clusters14.txt
+The cluster assignments were fixed before downstream biological annotation. Cell-line enrichment, TF motif enrichment, epigenomic profiles, and functional annotations were not used to generate the clusters.
+5. UMAP Visualization
+UMAP is used to visualize the cluster assignments in two dimensions.
+- Script: 5_umap.py
+- Input: PCA representation and Louvain cluster assignments
+- Output: umap_louvain_clusters.png
+🧬 Downstream Annotation Tools
+The resulting CBS clusters were interpreted using complementary downstream annotations. These annotations were applied after clustering and were not used to generate the original 20 clusters.
+- Motif enrichment: monaLisa v1.10.1, using the JASPAR 2020 vertebrate motif database
+- Genomic annotation: ChIPseeker v1.40.1
+- Gene Ontology enrichment: GREAT v4.0.4, using the “Basal plus extension” association rule
+- Canonical CTCF motif scanning: FIMO, MEME Suite v5.5.0
+- CTCF motif: JASPAR 2020 CORE vertebrate motif MA0139.1
+- FIMO threshold: P < 1 × 10⁻⁴
+- FIMO background model: uniform nucleotide frequencies (A = C = G = T = 0.25)
+- Strands scanned: both DNA strands
+📂 Data Availability
+The dataset generated in this study is available on Zenodo:
+DOI: 10.5281/zenodo.18057910
+The deposited files include the genomic coordinates of 236,552 CBSs, their cell-line occurrence information, FIMO motif scores, and assigned cluster identities.
+The pretrained Sei framework used to generate the sequence-predicted epigenomic features is available at:
+https://github.com/FunctionLab/seiframework
+The Sei model is described in:
+Chen KM, Wong AK, Troyanskaya OG, Zhou J. A sequence-based global map of regulatory activity for deciphering human genetics. Nature Genetics. 2022.
+https://doi.org/10.1038/s41588-022-01102-2
